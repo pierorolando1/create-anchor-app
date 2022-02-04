@@ -1,0 +1,25 @@
+{
+    "name": "create-anchor-app",
+    "version": "0.0.2",
+    "description": "Amazing create-anchor-app",
+    "main": "bin/index.js",
+    "author": "Piero Rolando",
+    "license": "MIT",
+    "scripts": {
+        "dev": "npm run build; node bin/index.js",
+        "build": "tsc",
+        "publish:npm": "npm run build; npm publish --access=public"
+    },
+    "devDependencies": {
+        "@types/inquirer": "^8.2.0",
+        "typescript": "^4.5.5"
+    },
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org/"
+    },
+    "dependencies": {
+        "chalk": "4.0.0",
+        "commander": "^9.0.0",
+        "inquirer": "^8.2.0"
+    }
+}
