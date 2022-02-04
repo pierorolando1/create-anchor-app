@@ -1,6 +1,6 @@
 {
   "name": "create-anchor-app",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Amazing create-anchor-app",
   "main": "bin/index.js",
   "author": "Piero Rolando",
