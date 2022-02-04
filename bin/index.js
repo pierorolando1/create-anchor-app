@@ -18,6 +18,22 @@ const commander_1 = require("commander");
 const inquirer_1 = require("inquirer");
 const package_json_1 = __importDefault(require("./package.json"));
 const log = console.log;
+/**
+ * Executes a shell command and return it as a Promise.
+ * @param cmd {string}
+ * @return {Promise<string>}
+ */
+const execShellCommand = (cmd) => {
+    const exec = require('child_process').exec;
+    return new Promise((resolve, reject) => {
+        exec(cmd, (error, stdout, stderr) => {
+            if (error) {
+                console.warn(error);
+            }
+            resolve(stdout ? stdout : stderr);
+        });
+    });
+};
 const verifyInstallPrograms = () => {
     const checkAnchor = () => {
         try {
@@ -55,7 +71,6 @@ const verifyInstallPrograms = () => {
 commander_1.program.version(package_json_1.default.version).description(package_json_1.default.description);
 commander_1.program.argument("[name]").action((_name) => __awaiter(void 0, void 0, void 0, function* () {
     if (verifyInstallPrograms()) {
-        //execSync("anchor init " + name)
         const initialQuestion = [
             {
                 type: "input",
@@ -71,19 +86,28 @@ commander_1.program.argument("[name]").action((_name) => __awaiter(void 0, void 
             }
         ];
         const res = yield (0, inquirer_1.prompt)(initialQuestion);
+        log(chalk_1.default.bold.blueBright("Creating your app..."));
+        yield execShellCommand("anchor init " + res.name);
         log(res);
         manageFrontendChoice(res.name, res.frontend);
     }
 }));
-const manageFrontendChoice = (projectName, name) => {
+const manageFrontendChoice = (projectName, name) => __awaiter(void 0, void 0, void 0, function* () {
     switch (name) {
         case "vite":
-            const a = (0, child_process_1.exec)("npm init vite@latest " + projectName);
+            const VITE_OPTIONS = ["vanilla", "vanilla-ts", "react", "react-ts", "vue", "vue-ts", "preact", "preact-ts", "lit", "lit-ts", "svelte", "svelte-ts"];
+            const a = yield (0, inquirer_1.prompt)([{
+                    type: "list",
+                    name: "vite_framework",
+                    message: "Select a framework to work whit vite",
+                    choices: VITE_OPTIONS
+                }]);
+            (0, child_process_1.exec)("npm init vite@latest " + projectName + "/app -- " + "--template " + a.vite_framework);
             break;
         case "create-react-app":
             break;
         default:
             break;
     }
-};
+});
 commander_1.program.parse(process.argv);

@@ -8,7 +8,22 @@ import packageJson from './package.json'
 
 const log = console.log
 
-
+/**
+ * Executes a shell command and return it as a Promise.
+ * @param cmd {string}
+ * @return {Promise<string>}
+ */
+const execShellCommand = (cmd: string): Promise<string> => {
+  const exec = require('child_process').exec;
+  return new Promise((resolve, reject) => {
+    exec(cmd, (error: any, stdout: any, stderr: any) => {
+      if (error) {
+        console.warn(error);
+      }
+      resolve(stdout ? stdout : stderr);
+    });
+  });
+}
 
 const verifyInstallPrograms = () => {
 
@@ -54,7 +69,6 @@ program.version(packageJson.version).description(packageJson.description)
 program.argument("[name]").action(async (_name) => {
 
   if (verifyInstallPrograms()) {
-    //execSync("anchor init " + name)
 
     const initialQuestion = [
       {
@@ -72,6 +86,10 @@ program.argument("[name]").action(async (_name) => {
     ]
 
     const res = await prompt(initialQuestion)
+
+    log(chalk.bold.blueBright("Creating your app..."))
+
+    await execShellCommand("anchor init " + res.name)
 
     log(res)
     manageFrontendChoice(res.name, res.frontend)
@@ -92,7 +110,7 @@ const manageFrontendChoice = async (projectName: string, name: string) => {
         choices: VITE_OPTIONS
       }])
 
-      execSync("npm init vite@latest " + projectName + "--" + "--template" + a.vite_framework)
+      exec("npm init vite@latest " + projectName + "/app -- " + "--template " + a.vite_framework)
       break
     case "create-react-app":
       break
